@@ -1,32 +1,20 @@
-package com.empcraft;
+package com.empcraft.vsr;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.selections.Selection;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 
 
-public class VSRWorldguard implements Listener {
+public class Worldguard implements Listener {
 	WorldGuardPlugin worldguard;
 	VoxelSniperRegions plugin;
 	WorldEditPlugin worldedit;
@@ -40,7 +28,7 @@ public class VSRWorldguard implements Listener {
 	 
 	    return (WorldGuardPlugin) plugin;
 	}
-	public VSRWorldguard(Plugin p2,VoxelSniperRegions p3) {
+	public Worldguard(Plugin p2,VoxelSniperRegions p3) {
 		worldedit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
     	worldguard = getWorldGuard();
     	plugin = p3;
@@ -88,7 +76,6 @@ public class VSRWorldguard implements Listener {
 		Location[] toreturn = new Location[2];
 		ProtectedRegion myregion = isowner(player);
 		if (myregion!=null) {
-			CuboidRegion cuboid = new CuboidRegion(myregion.getMinimumPoint(), myregion.getMaximumPoint());
 			toreturn[0] = new Location(player.getWorld(),myregion.getMinimumPoint().getBlockX(),myregion.getMinimumPoint().getBlockY(),myregion.getMinimumPoint().getBlockZ());
 			toreturn[1] = new Location(player.getWorld(),myregion.getMaximumPoint().getBlockX(),myregion.getMaximumPoint().getBlockY(),myregion.getMaximumPoint().getBlockZ());
 			return toreturn;

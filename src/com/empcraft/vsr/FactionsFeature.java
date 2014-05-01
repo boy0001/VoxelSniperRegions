@@ -1,4 +1,4 @@
-package com.empcraft;
+package com.empcraft.vsr;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -10,10 +10,10 @@ import com.massivecraft.factions.entity.BoardColls;
 import com.massivecraft.factions.entity.Faction;
 import com.massivecraft.mcore.ps.PS;
 
-public class VSRFactions implements Listener {
+public class FactionsFeature implements Listener {
 	VoxelSniperRegions plugin;
 	Plugin factions;
-	public VSRFactions(Plugin factionsPlugin, VoxelSniperRegions p3) {
+	public FactionsFeature(Plugin factionsPlugin, VoxelSniperRegions p3) {
 		factions = factionsPlugin;
     	plugin = p3;
     	

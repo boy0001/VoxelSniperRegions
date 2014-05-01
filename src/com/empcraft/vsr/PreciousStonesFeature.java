@@ -1,29 +1,21 @@
-package com.empcraft;
+package com.empcraft.vsr;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import net.sacredlabyrinth.Phaed.PreciousStones.FieldFlag;
 import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
 import net.sacredlabyrinth.Phaed.PreciousStones.vectors.Field;
 
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 
 
-public class VSRPreciousStones implements Listener {
+public class PreciousStonesFeature implements Listener {
 	VoxelSniperRegions plugin;
 	Plugin preciousstones;
-	public VSRPreciousStones(Plugin preciousstonesPlugin, VoxelSniperRegions p3) {
+	public PreciousStonesFeature(Plugin preciousstonesPlugin, VoxelSniperRegions p3) {
 		preciousstones = preciousstonesPlugin;
     	plugin = p3;
     	

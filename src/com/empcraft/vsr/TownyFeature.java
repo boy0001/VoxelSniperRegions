@@ -1,15 +1,7 @@
-package com.empcraft;
+package com.empcraft.vsr;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -21,10 +13,10 @@ import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 
 
-public class VSRTowny implements Listener {
+public class TownyFeature implements Listener {
 	VoxelSniperRegions plugin;
 	Plugin towny;
-	public VSRTowny(Plugin townyPlugin, VoxelSniperRegions p3) {
+	public TownyFeature(Plugin townyPlugin, VoxelSniperRegions p3) {
 		towny = townyPlugin;
     	plugin = p3;
     	
@@ -58,7 +50,7 @@ public class VSRTowny implements Listener {
 					catch (Exception e) {
 						
 					}
-					if (plugin.checkperm(player, "wrg.towny.*")) {
+					if (plugin.CheckPerm(player, "wrg.towny.*")) {
 						if (myplot.getTown().hasResident(player.getName())) {
 							Chunk chunk = player.getLocation().getChunk();
 							toreturn[0] = new Location(player.getWorld(), chunk.getX() * 16, 0, chunk.getZ() * 16);

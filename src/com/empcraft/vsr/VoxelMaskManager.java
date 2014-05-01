@@ -1,22 +1,20 @@
-package com.empcraft;
+package com.empcraft.vsr;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.sk89q.worldedit.BlockVector;
-
-public abstract class VSRRegion
+public abstract class VoxelMaskManager
 {
 	private final String key;
 	private final Plugin myplugin;
-	private final VoxelSniperRegions myVSR;
+//	private final VoxelSniperRegions myVSR;
   
-    public VSRRegion(Plugin plugin,VoxelSniperRegions VSR)
+    public VoxelMaskManager(Plugin plugin,VoxelSniperRegions VSR)
     {
     	key = plugin.getName();
     	myplugin = plugin;
-    	myVSR = VSR;
+//    	myVSR = VSR;
     }
     public String getKey()
     {
@@ -34,4 +32,4 @@ public abstract class VSRRegion
     
     public abstract String getid(Player player);
 	
-	}
+}

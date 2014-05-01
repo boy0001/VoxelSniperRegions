@@ -1,18 +1,9 @@
-package com.empcraft;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package com.empcraft.vsr;
 
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -20,10 +11,10 @@ import org.bukkit.plugin.Plugin;
 
 
 
-public class VSRGriefPrevention implements Listener {
+public class GriefPreventionFeature implements Listener {
 	VoxelSniperRegions plugin;
 	Plugin griefprevention;
-	public VSRGriefPrevention(Plugin griefpreventionPlugin, VoxelSniperRegions p3) {
+	public GriefPreventionFeature(Plugin griefpreventionPlugin, VoxelSniperRegions p3) {
 		griefprevention = griefpreventionPlugin;
     	plugin = p3;
     	

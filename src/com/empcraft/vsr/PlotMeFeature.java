@@ -1,26 +1,18 @@
-package com.empcraft;
+package com.empcraft.vsr;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 import com.worldcretornica.plotme.Plot;
 import com.worldcretornica.plotme.PlotManager;
-import com.worldcretornica.plotme.PlotMe;
 
-public class VSRPlotMe implements Listener {
+public class PlotMeFeature implements Listener {
 	VoxelSniperRegions plugin;
 	Plugin plotme;
-	public VSRPlotMe(Plugin plotmePlugin, VoxelSniperRegions p3) {
+	public PlotMeFeature(Plugin plotmePlugin, VoxelSniperRegions p3) {
 		plotme = plotmePlugin;
     	plugin = p3;
     	

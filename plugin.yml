@@ -1,8 +1,8 @@
 name: VoxelSniperRegions
-main: com.empcraft.VoxelSniperRegions
-version: 0.2.0
+main: com.empcraft.vsr.VoxelSniperRegions
+version: 0.3.2
 depend: [VoxelSniper]
-softdepend: [Worldedit,WorldGuard,GriefPrevention,PreciousStones,Towny,Factions,Residence]
+softdepend: [Worldedit,WorldGuard,GriefPrevention,PreciousStones,Towny,Factions,Residence,ProtocolLib]
 commands:
    vsr:
       description: All VoxelSniper Regions Commands
