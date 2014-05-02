@@ -58,9 +58,9 @@ public class ProtocolIn {
 								}
 								Location location = block.getLocation();
 								if (VSR.lastMask.containsKey(player.getName())) {
-									Location[] locs;
+									VoxelMask mymask;
 									try {
-										locs = (Location[]) VSR.lastMask.get(player.getName());
+										mymask = VSR.lastMask.get(player.getName());
 									}
 									catch (Exception e) {
 										VSR.Msg(player,VSR.GetMsg("MSG1"));
@@ -69,8 +69,8 @@ public class ProtocolIn {
 									}
 									Location pos1 = new Location(player.getWorld(), location.getBlockX()+radius, location.getBlockY()+radius, location.getBlockZ()+radius);
 									Location pos2 = new Location(player.getWorld(), location.getBlockX()-radius, location.getBlockY()-radius, location.getBlockZ()-radius);
-									if (VSR.isIn(locs, pos1)) {
-										if (VSR.isIn(locs, pos2)) {
+									if (mymask.contains(pos1)) {
+										if (mymask.contains(pos2)) {
 											//TODO CHECK IF BRUSH IS SAFE
 											if (true) { //IF WHITELISTED
 												VSR.setCheck(false);
