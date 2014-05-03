@@ -2,10 +2,12 @@ package com.empcraft.vsr;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -114,10 +116,10 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     	}
     	return mystring;
     }
-    public synchronized void addRegion(VoxelMaskManager region) {
+    public synchronized void addMaskManager(VoxelMaskManager region) {
     	regions.put(region.getPlugin(), region);
     }
-    public synchronized VoxelMaskManager getRegion (String key) {
+    public synchronized VoxelMaskManager getMaskManager (String key) {
     	for (VoxelMaskManager current:regions.values()) {
     		if (current.getKey().equals(key)) {
     			return current;
@@ -125,7 +127,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     	}
     	return null;
     }
-    public synchronized VoxelMaskManager getRegion (Plugin myplugin) {
+    public synchronized VoxelMaskManager getMaskManager (Plugin myplugin) {
     	return regions.get(myplugin);
     }
     public synchronized List<VoxelMaskManager> getRegions() {
@@ -141,13 +143,13 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     	}
     	return toreturn;
     }
-    public synchronized VoxelMaskManager removeRegion (VoxelMaskManager region) {
+    public synchronized VoxelMaskManager removeMaskManager (VoxelMaskManager region) {
     	return regions.remove(region.getKey());
     }
-    public synchronized VoxelMaskManager removeRegion (Plugin myplugin) {
+    public synchronized VoxelMaskManager removeMaskManager (Plugin myplugin) {
     	return regions.remove(myplugin);
     }
-    public synchronized VoxelMaskManager removeRegion (String key) {
+    public synchronized VoxelMaskManager removeMaskManager (String key) {
     	for (VoxelMaskManager current:regions.values()) {
     		if (current.getKey().equals(key)) {
     			return regions.remove(current.getKey());
@@ -177,7 +179,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 		Plugin worldguardPlugin = getServer().getPluginManager().getPlugin("WorldGuard");
         if((worldguardPlugin != null) && worldguardPlugin.isEnabled()) {
         	wgf = new Worldguard(worldguardPlugin,this);
-    		addRegion(new VoxelMaskManager(worldguardPlugin,this) {
+    		addMaskManager(new VoxelMaskManager(worldguardPlugin,this) {
     			@Override
     			public String getid(Player player) {
     				return wgf.getid(player);
@@ -195,7 +197,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 		Plugin plotmePlugin = getServer().getPluginManager().getPlugin("PlotMe");
         if((plotmePlugin != null) && plotmePlugin.isEnabled()) {
         	pmf = new PlotMeFeature(plotmePlugin,this);
-    		addRegion(new VoxelMaskManager(plotmePlugin,this) {
+        	addMaskManager(new VoxelMaskManager(plotmePlugin,this) {
     			@Override
     			public String getid(Player player) {
     				return pmf.getid(player);
@@ -213,7 +215,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 		Plugin townyPlugin = getServer().getPluginManager().getPlugin("Towny");
         if((townyPlugin != null) && townyPlugin.isEnabled()) {
         	tf = new TownyFeature(townyPlugin,this);
-    		addRegion(new VoxelMaskManager(townyPlugin,this) {
+        	addMaskManager(new VoxelMaskManager(townyPlugin,this) {
     			@Override
     			public String getid(Player player) {
     				return tf.getid(player);
@@ -231,7 +233,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         Plugin factionsPlugin = getServer().getPluginManager().getPlugin("Factions");
         if((factionsPlugin != null) && factionsPlugin.isEnabled()) {
         	ff = new FactionsFeature(factionsPlugin,this);
-    		addRegion(new VoxelMaskManager(factionsPlugin,this) {
+        	addMaskManager(new VoxelMaskManager(factionsPlugin,this) {
     			@Override
     			public String getid(Player player) {
     				return ff.getid(player);
@@ -250,7 +252,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         Plugin residencePlugin = getServer().getPluginManager().getPlugin("Residence");
         if((residencePlugin != null) && residencePlugin.isEnabled()) {
         	rf = new ResidenceFeature(residencePlugin,this);
-    		addRegion(new VoxelMaskManager(residencePlugin,this) {
+        	addMaskManager(new VoxelMaskManager(residencePlugin,this) {
     			@Override
     			public String getid(Player player) {
     				return rf.getid(player);
@@ -268,7 +270,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         Plugin griefpreventionPlugin = getServer().getPluginManager().getPlugin("GriefPrevention");
         if((griefpreventionPlugin != null) && griefpreventionPlugin.isEnabled()) {
         	gpf = new GriefPreventionFeature(griefpreventionPlugin,this);
-    		addRegion(new VoxelMaskManager(griefpreventionPlugin,this) {
+        	addMaskManager(new VoxelMaskManager(griefpreventionPlugin,this) {
     			@Override
     			public String getid(Player player) {
     				return gpf.getid(player);
@@ -286,7 +288,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         Plugin preciousstonesPlugin = getServer().getPluginManager().getPlugin("PreciousStones");
         if((preciousstonesPlugin != null) && preciousstonesPlugin.isEnabled()) {
         	psf = new PreciousStonesFeature(preciousstonesPlugin,this);
-    		addRegion(new VoxelMaskManager(preciousstonesPlugin,this) {
+        	addMaskManager(new VoxelMaskManager(preciousstonesPlugin,this) {
     			@Override
     			public String getid(Player player) {
     				return psf.getid(player);
@@ -500,6 +502,12 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 				return lastMask.get(player.getName());
 		}
 		return null;
+	}
+	public VoxelMask[] getMasks() {
+		return lastMask.values().toArray(new VoxelMask[lastMask.values().size()]);
+	}
+	public String[] getMaskedPlayerNames() {
+		return lastMask.keySet().toArray(new String[lastMask.keySet().size()]);
 	}
 	public void setMask(Player player,VoxelMask mask) {
 		lastMask.put(player.getName(), mask);

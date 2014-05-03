@@ -1,5 +1,6 @@
 package com.empcraft.vsr;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -19,6 +20,7 @@ public class ProtocolIn {
 	    new PacketAdapter(VSR, PacketType.Play.Client.BLOCK_PLACE) {
 			@Override
 			public void onPacketReceiving(PacketEvent event) {
+				if (event.isCancelled()) { return; }
 				VSR.setCheck(true);
 				Player player = event.getPlayer();
 				ItemStack helditem = player.getItemInHand();
@@ -36,13 +38,19 @@ public class ProtocolIn {
 								isVoxel = true;
 							}
 							if (isVoxel) {
+								boolean packet2 = false;
+								if ((event.getPacket().getFloat().getValues().get(0)==0)&&(event.getPacket().getFloat().getValues().get(1)==0)&&(event.getPacket().getFloat().getValues().get(2)==0)) {
+									packet2 = true;
+								}
 								int radius = VSR.sniperManager.radius(player, VSR.voxelsniper);
 								if (VSR.getConfig().getInt("cooldown-brush-size")<=radius) {
 									if (VSR.CheckPerm(player,"vsr.cooldown.bypass")==false) {
 										Long currentTime = System.currentTimeMillis();
 										if (VSR.coolDown.containsKey(player.getName())) {
 											if (currentTime<VSR.coolDown.get(player.getName())) {
-												VSR.Msg(player,VSR.GetMsg("MSG3"));
+												if (!packet2) {
+													VSR.Msg(player,VSR.GetMsg("MSG3"));
+												}
 												event.setCancelled(true);
 												return;
 											}
@@ -52,7 +60,9 @@ public class ProtocolIn {
 								}
 								Block block = player.getTargetBlock(null, 256);
 								if (block==null) {
-									VSR.Msg(player,VSR.GetMsg("MSG2"));
+									if (!packet2) {
+										VSR.Msg(player,VSR.GetMsg("MSG2"));
+									}
 									event.setCancelled(true);
 									return;
 								}
@@ -63,7 +73,9 @@ public class ProtocolIn {
 										mymask = VSR.lastMask.get(player.getName());
 									}
 									catch (Exception e) {
-										VSR.Msg(player,VSR.GetMsg("MSG1"));
+										if (!packet2) {
+											VSR.Msg(player,VSR.GetMsg("MSG1"));
+										}
 										event.setCancelled(true);
 										return;
 									}
@@ -76,17 +88,18 @@ public class ProtocolIn {
 												VSR.setCheck(false);
 												return;
 											}
-//											else {
-//												return;
-//											}
 										}
 									}
-									VSR.Msg(player,VSR.GetMsg("MSG15"));
+									if (!packet2) {
+										VSR.Msg(player,VSR.GetMsg("MSG15"));
+									}
 									event.setCancelled(true);
 									return;
 								}
 								else {
-									VSR.Msg(player,VSR.GetMsg("MSG1"));
+									if (!packet2) {
+										VSR.Msg(player,VSR.GetMsg("MSG1"));
+									}
 									event.setCancelled(true);
 									return;
 								}
