@@ -49,7 +49,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	SniperManagerFeature sniperManager;
 	private boolean toUndo = false;
 	private volatile boolean toCheck = true;
-	private String lastMsg;
+	volatile String lastMsg;
 	private Player lastPlayer;
 	synchronized void setCheck(boolean value) {
 		toCheck = value;
@@ -93,7 +93,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     	}
 		return hasperm;
     }
-    void Msg(Player player,String mystring) {
+    synchronized void Msg(Player player,String mystring) {
     	if (mystring==null||mystring.equals("")) {
     		return;
     	}
@@ -304,7 +304,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         saveResource("english.yml", true);
         getConfig().options().copyDefaults(true);
         Map<String, Object> options = new HashMap<String, Object>();
-        getConfig().set("version", "0.3.2");
+        getConfig().set("version", "0.3.3");
         options.put("language","english");
         options.put("fast-mode",true);
         options.put("cooldown-ms",100);
@@ -497,12 +497,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	}
 	public VoxelMask getMask(Player player) {
 		if (lastMask.containsKey(player.getName())) {
-			if (lastMask.get(player.getName()).equals("")) {
-				return null;
-			}
-			else {
-				return (VoxelMask) lastMask.get(player.getName());
-			}
+				return lastMask.get(player.getName());
 		}
 		return null;
 	}
@@ -557,6 +552,13 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 			    		lastregion.put(player.getName(),false);
 						if (CheckPerm(player,"vsr.notify")) {
 							Msg(player,GetMsg("MSG1"));
+						}
+					}
+					else if (CheckPerm(player,"vsr.notify.farewell")) {
+						if (lastregion.containsKey(player.getName())) {
+							if (lastregion.get(player.getName())==true) {
+								Msg(player,GetMsg("FAREWELL"));
+							}
 						}
 					}
 				}

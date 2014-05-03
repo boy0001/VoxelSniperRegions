@@ -1,12 +1,5 @@
 package com.empcraft.vsr;
 
-//TODO check that isIn works
-//check that you can set a custom mask
-//check that world changing works
-//check that you can remove a mask
-//check that entering and leaving a region sends you a message (and in the correct location)
-//check that messages work
-
 import org.bukkit.Location;
 
 public class VoxelMask
@@ -63,12 +56,12 @@ public class VoxelMask
     }
     public boolean contains(Location loc) {
 		if (position1.getWorld().equals(loc.getWorld())) {
-			if (loc.getBlockX() <= position1.getBlockX()) { return false; }
-			if (loc.getBlockX() >= position2.getBlockX()) { return false; }
-			if (loc.getBlockZ() <= position1.getBlockZ()) { return false; }
-			if (loc.getBlockZ() >= position2.getBlockZ()) { return false; }
-			if (loc.getBlockY() <= position1.getBlockY()) { return false; }
-			if (loc.getBlockY() >= position2.getBlockY()) { return false; }
+			if (loc.getBlockX() < position1.getBlockX()) { return false; }
+			if (loc.getBlockX() > position2.getBlockX()) { return false; }
+			if (loc.getBlockZ() < position1.getBlockZ()) { return false; }
+			if (loc.getBlockZ() > position2.getBlockZ()) { return false; }
+			if (loc.getBlockY() < position1.getBlockY()) { return false; }
+			if (loc.getBlockY() > position2.getBlockY()) { return false; }
 		}
 		else {
 			return false;
