@@ -186,7 +186,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     				return wgf.getMask(player,location);
     			}
     		});
-            getServer().getPluginManager().registerEvents(wgf,this);
             Msg(null,"Plugin 'WorldGuard' found. Using it now.");
         } else {
             Msg(null,"Plugin 'WorldGuard' not found. Worldguard features disabled.");
@@ -200,7 +199,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     				return pmf.getMask(player,location);
     			}
     		});
-            getServer().getPluginManager().registerEvents(pmf,this);
             Msg(null,"Plugin 'PlotMe' found. Using it now.");
         } else {
             Msg(null,"Plugin 'PlotMe' not found. PlotMe features disabled.");
@@ -214,7 +212,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     				return tf.getMask(player,location);
     			}
     		});
-            getServer().getPluginManager().registerEvents(tf,this);
             Msg(null,"Plugin 'Towny' found. Using it now.");
         } else {
             Msg(null,"Plugin 'Towny' not found. Towny features disabled.");
@@ -228,7 +225,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     				return ff.getMask(player,location);
     			}
     		});
-            getServer().getPluginManager().registerEvents(ff,this);
             Msg(null,"Plugin 'Factions' found. Using it now.");
         } else {
             Msg(null,"Plugin 'Factions' not found. Factions features disabled.");
@@ -242,7 +238,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     				return rf.getMask(player,location);
     			}
     		});
-            getServer().getPluginManager().registerEvents(rf,this);
             Msg(null,"Plugin 'Residence' found. Using it now.");
         } else {
             Msg(null,"Plugin 'Residence' not found. Factions features disabled.");
@@ -256,7 +251,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     				return gpf.getMask(player,location);
     			}
     		});
-            getServer().getPluginManager().registerEvents(gpf,this);
             Msg(null,"Plugin 'GriefPrevention' found. Using it now.");
         } else {
             Msg(null,"Plugin 'GriefPrevention' not found. GriefPrevention features disabled.");
@@ -270,7 +264,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     				return psf.getMask(player,location);
     			}
     		});
-            getServer().getPluginManager().registerEvents(psf,this);
             Msg(null,"Plugin 'PreciousStones' found. Using it now.");
         } else {
             Msg(null,"Plugin 'PreciousStones' not found. PreciousStones features disabled.");
@@ -290,10 +283,9 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         }
     	saveConfig();
     	this.saveDefaultConfig();
-    	getServer().getPluginManager().registerEvents(this, this);   
 		for (Player player:Bukkit.getOnlinePlayers()) {
     		lastMask.remove(player.getName());
-    		lastregion.put(player.getName(),false);
+    		lastregion.remove(player.getName());
 		}
 		Plugin protocolLibPlugin = getServer().getPluginManager().getPlugin("ProtocolLib");
 		if (protocolLibPlugin!=null) {
@@ -368,7 +360,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	private void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		lastMask.remove(player.getName());
-		lastregion.put(player.getName(),false);
+		lastregion.remove(player.getName());
 	}
 	@EventHandler(priority=EventPriority.LOWEST)
 	private void onPlayerInteract(PlayerInteractEvent event) {
@@ -443,10 +435,24 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	}
 	@EventHandler
 	private void onPlayerMove(PlayerMoveEvent event) {
-		if ((event.getFrom().getBlockX()!=(event.getTo().getBlockX()))) { return; }
-		if ((event.getFrom().getBlockY()!=(event.getTo().getBlockY()))) { return; }
-		if ((event.getFrom().getBlockZ()!=(event.getTo().getBlockZ()))) { return; }
-		try {updateMask(event.getPlayer(),event.getPlayer().getLocation()); } catch (Exception e) {  }
+		if ((event.getFrom().getBlockX()==(event.getTo().getBlockX()))&&(event.getFrom().getBlockY()==(event.getTo().getBlockY()))&&(event.getFrom().getBlockZ()==(event.getTo().getBlockZ()))) { return; }
+		try {
+			Player player = event.getPlayer();
+			updateMask(event.getPlayer(),event.getPlayer().getLocation());
+			if (lastMask.containsKey(player.getName())) {
+				if ((lastMask.get(player.getName()).contains(event.getFrom()))&&(!lastMask.get(player.getName()).contains(event.getTo()))) {
+					if (CheckPerm(player, "vsr.notify.farewell")) {
+						Msg(player,GetMsg("FAREWELL"));
+					}
+					// leaving region
+				}
+				else if ((!lastMask.get(player.getName()).contains(event.getFrom()))&&(lastMask.get(player.getName()).contains(event.getTo()))) {
+					if (CheckPerm(player, "vsr.notify.greeting")) {
+						Msg(player,GetMsg("GREETING"));
+					}
+				}
+			}
+		} catch (Exception e) {  }
 	}
 	@EventHandler
 	private void onPlayerPortal(PlayerPortalEvent event) {
@@ -455,7 +461,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 			if (last instanceof Location[]) {
 				if ((((Location[]) last)[0]).getWorld().equals(event.getPlayer().getWorld())==false) {
 		    		lastMask.remove(event.getPlayer().getName());
-		    		lastregion.put(event.getPlayer().getName(),false);
+		    		lastregion.remove(event.getPlayer().getName());
 				}
 			}
 		}
@@ -467,7 +473,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 			if (last instanceof Location[]) {
 				if ((((Location[]) last)[0]).getWorld().equals(event.getPlayer().getWorld())==false) {
 					lastMask.remove(event.getPlayer().getName());
-		    		lastregion.put(event.getPlayer().getName(),false);
+					lastregion.remove(event.getPlayer().getName());
 				}
 			}
 		}
@@ -493,7 +499,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	public synchronized void updateMask(Player player, Location location) {
 		if (CheckPerm(player,"vsr.bypass")==false) {
 			VoxelMask voxelmask = null;
-			String myid = "";
 			for (VoxelMaskManager current:regions.values()) {
 				if (voxelmask==null) {
 					if (CheckPerm(player,"vsr."+current.getKey())) {
@@ -501,58 +506,31 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 					}
 				}
 			}
+			boolean hasMask = lastMask.containsKey(player.getName());
 			if (voxelmask != null) {
-				if (lastMask.containsKey(player.getName())) {
-					if ((((VoxelMask) lastMask.get(player.getName())).getName().equals(myid))==false) {
-						Msg(player,GetMsg("MSG5")+" &a"+myid+"&7.");
+				if (hasMask==false) {
+					if (CheckPerm(player, "vsr.notify")) {
+						Msg(player,GetMsg("MSG5")+" &a"+voxelmask.getName());
 					}
-					else {
-						if (CheckPerm(player,"vsr.notify.greeting")) {
-							if (lastregion.containsKey(player.getName())) {
-								if (lastregion.get(player.getName())==false) {
-									Msg(player,GetMsg("GREETING"));
-								}
-							}
-						}
-					}
-				}
-				else {
-					Msg(player,GetMsg("MSG5")+" &a"+myid+"&7.");
 				}
 				lastMask.put(player.getName(),voxelmask);
 				lastregion.put(player.getName(),true);
 			}
 			else {
 				if (lastMask.containsKey(player.getName())) {
-					VoxelMask mask = lastMask.get(player.getName());
-					if (mask.contains(player.getLocation())) {
-			    		lastMask.remove(player.getName());
-			    		lastregion.put(player.getName(),false);
-						if (CheckPerm(player,"vsr.notify")) {
+					if (lastMask.get(player.getName()).contains(location)) {
+						if (CheckPerm(player, "vsr.notify")) {
 							Msg(player,GetMsg("MSG1"));
 						}
-					}
-					else if (CheckPerm(player,"vsr.notify.farewell")) {
-						if (lastregion.containsKey(player.getName())) {
-							if (lastregion.get(player.getName())==true) {
-								Msg(player,GetMsg("FAREWELL"));
-							}
-						}
+						lastMask.remove(player.getName());
+			    		lastregion.remove(player.getName());
 					}
 				}
-				else if (CheckPerm(player,"vsr.notify.farewell")) {
-					if (lastregion.containsKey(player.getName())) {
-						if (lastregion.get(player.getName())==true) {
-							Msg(player,GetMsg("FAREWELL"));
-						}
-					}
-				}
-				lastregion.put(player.getName(),false);
 			}
 		}
 		else {
 			lastMask.remove(player.getName());
-    		lastregion.put(player.getName(),false);
+    		lastregion.remove(player.getName());
 		}
 	}
 	@EventHandler(priority=EventPriority.LOWEST)

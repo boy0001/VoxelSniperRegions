@@ -48,7 +48,7 @@ public class ProtocolIn {
 										Long currentTime = System.currentTimeMillis();
 										if (VSR.coolDown.containsKey(player.getName())) {
 											if (currentTime<VSR.coolDown.get(player.getName())) {
-												if (!packet2) {
+												if (packet2) {
 													VSR.Msg(player,VSR.GetMsg("MSG3"));
 												}
 												event.setCancelled(true);
@@ -58,23 +58,23 @@ public class ProtocolIn {
 										
 									}
 								}
-								Block block = player.getTargetBlock(null, 256);
+								Block block = player.getTargetBlock(null, 512);
 								if (block==null) {
-									if (!packet2) {
+									if (packet2) {
 										VSR.Msg(player,VSR.GetMsg("MSG2"));
 									}
 									event.setCancelled(true);
 									return;
 								}
 								Location location = block.getLocation();
-								VSR.updateMask(player, location);
+								if (packet2) { VSR.updateMask(player, location); }
 								if (VSR.lastMask.containsKey(player.getName())) {
 									VoxelMask mymask;
 									try {
 										mymask = VSR.lastMask.get(player.getName());
 									}
 									catch (Exception e) {
-										if (!packet2) {
+										if (packet2) {
 											VSR.Msg(player,VSR.GetMsg("MSG1"));
 										}
 										event.setCancelled(true);
@@ -91,14 +91,14 @@ public class ProtocolIn {
 											}
 										}
 									}
-									if (!packet2) {
+									if (packet2) {
 										VSR.Msg(player,VSR.GetMsg("MSG15"));
 									}
 									event.setCancelled(true);
 									return;
 								}
 								else {
-									if (!packet2) {
+									if (packet2) {
 										VSR.Msg(player,VSR.GetMsg("MSG1"));
 									}
 									event.setCancelled(true);
