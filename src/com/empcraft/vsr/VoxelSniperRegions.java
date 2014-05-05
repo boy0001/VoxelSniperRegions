@@ -492,17 +492,16 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	}
 	public synchronized void updateMask(Player player, Location location) {
 		if (CheckPerm(player,"vsr.bypass")==false) {
-			VoxelMask mymask = null;
 			VoxelMask voxelmask = null;
 			String myid = "";
 			for (VoxelMaskManager current:regions.values()) {
 				if (voxelmask==null) {
 					if (CheckPerm(player,"vsr."+current.getKey())) {
-						mymask = current.getMask(player,location);
+						voxelmask = current.getMask(player,location);
 					}
 				}
 			}
-			if (mymask != null) {
+			if (voxelmask != null) {
 				if (lastMask.containsKey(player.getName())) {
 					if ((((VoxelMask) lastMask.get(player.getName())).getName().equals(myid))==false) {
 						Msg(player,GetMsg("MSG5")+" &a"+myid+"&7.");
