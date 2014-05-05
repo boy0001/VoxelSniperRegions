@@ -67,6 +67,7 @@ public class ProtocolIn {
 									return;
 								}
 								Location location = block.getLocation();
+								VSR.updateMask(player, location);
 								if (VSR.lastMask.containsKey(player.getName())) {
 									VoxelMask mymask;
 									try {

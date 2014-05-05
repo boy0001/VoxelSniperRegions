@@ -28,8 +28,5 @@ public abstract class VoxelMaskManager
     	return myplugin;
     }
     
-    public abstract Location[] getcuboid(Player player);
-    
-    public abstract String getid(Player player);
-	
+    public abstract VoxelMask getMask(Player player, Location location);
 }

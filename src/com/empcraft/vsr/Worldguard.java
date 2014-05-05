@@ -34,9 +34,9 @@ public class Worldguard implements Listener {
     	plugin = p3;
     	
     }
-	public ProtectedRegion isowner(Player player) {
+	public ProtectedRegion isowner(Player player, Location location) {
 		com.sk89q.worldguard.LocalPlayer localplayer = worldguard.wrapPlayer(player);
-		ApplicableRegionSet regions = worldguard.getRegionManager(player.getWorld()).getApplicableRegions(player.getLocation());
+		ApplicableRegionSet regions = worldguard.getRegionManager(player.getWorld()).getApplicableRegions(location);
 		for (ProtectedRegion region:regions) {
 			if (region.isOwner(localplayer)) {
 				return region;
@@ -72,13 +72,17 @@ public class Worldguard implements Listener {
 		}
 		return null;
 	}
-	public Location[] getcuboid(Player player) {
-		Location[] toreturn = new Location[2];
-		ProtectedRegion myregion = isowner(player);
+	public VoxelMask getMask(Player player, Location location) {
+		final ProtectedRegion myregion = isowner(player,location);
 		if (myregion!=null) {
-			toreturn[0] = new Location(player.getWorld(),myregion.getMinimumPoint().getBlockX(),myregion.getMinimumPoint().getBlockY(),myregion.getMinimumPoint().getBlockZ());
-			toreturn[1] = new Location(player.getWorld(),myregion.getMaximumPoint().getBlockX(),myregion.getMaximumPoint().getBlockY(),myregion.getMaximumPoint().getBlockZ());
-			return toreturn;
+			Location pos1 = new Location(location.getWorld(),myregion.getMinimumPoint().getBlockX(),myregion.getMinimumPoint().getBlockY(),myregion.getMinimumPoint().getBlockZ());
+			Location pos2 = new Location(location.getWorld(),myregion.getMaximumPoint().getBlockX(),myregion.getMaximumPoint().getBlockY(),myregion.getMaximumPoint().getBlockZ());
+			return new VoxelMask(pos1, pos2) {
+				@Override
+				public String getName() {
+					return myregion.getId();
+				}
+			};
 		}
 		else {
 			return null;
@@ -86,16 +90,5 @@ public class Worldguard implements Listener {
 		
 		
 	}
-	public String getid(Player player) {
-		
-		ProtectedRegion myregion = isowner(player);
-		if (myregion!=null) {
-			return myregion.getId();
-		}
-		else {
-			return null;
-		}
-	}
-
 }
 

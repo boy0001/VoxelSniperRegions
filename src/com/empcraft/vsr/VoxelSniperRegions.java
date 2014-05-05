@@ -35,11 +35,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.thevoxelbox.voxelsniper.VoxelSniper;
 public final class VoxelSniperRegions extends JavaPlugin implements Listener {
-	Map<Plugin, VoxelMaskManager> regions = new HashMap<Plugin, VoxelMaskManager>();
+	volatile Map<Plugin, VoxelMaskManager> regions = new ConcurrentHashMap<Plugin, VoxelMaskManager>();
 	volatile Map<String, Long> coolDown = new ConcurrentHashMap<String, Long>();
 	volatile Map<String, VoxelMask> lastMask = new ConcurrentHashMap<String, VoxelMask>();
-	private Map<String, Boolean> lastregion = new HashMap<String, Boolean>();
+	volatile Map<String, Boolean> lastregion = new ConcurrentHashMap<String, Boolean>();
 	VoxelSniperRegions plugin;
+	ProtocolIn protocolin = null;
 	Worldguard wgf;
 	PlotMeFeature pmf;
 	ResidenceFeature rf;
@@ -181,12 +182,8 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         	wgf = new Worldguard(worldguardPlugin,this);
     		addMaskManager(new VoxelMaskManager(worldguardPlugin,this) {
     			@Override
-    			public String getid(Player player) {
-    				return wgf.getid(player);
-    			}
-    			@Override
-    			public Location[] getcuboid(Player player) {
-    				return wgf.getcuboid(player);
+    			public VoxelMask getMask(Player player,Location location) {
+    				return wgf.getMask(player,location);
     			}
     		});
             getServer().getPluginManager().registerEvents(wgf,this);
@@ -198,13 +195,9 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         if((plotmePlugin != null) && plotmePlugin.isEnabled()) {
         	pmf = new PlotMeFeature(plotmePlugin,this);
         	addMaskManager(new VoxelMaskManager(plotmePlugin,this) {
-    			@Override
-    			public String getid(Player player) {
-    				return pmf.getid(player);
-    			}
-    			@Override
-    			public Location[] getcuboid(Player player) {
-    				return pmf.getcuboid(player);
+        		@Override
+    			public VoxelMask getMask(Player player,Location location) {
+    				return pmf.getMask(player,location);
     			}
     		});
             getServer().getPluginManager().registerEvents(pmf,this);
@@ -216,13 +209,9 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         if((townyPlugin != null) && townyPlugin.isEnabled()) {
         	tf = new TownyFeature(townyPlugin,this);
         	addMaskManager(new VoxelMaskManager(townyPlugin,this) {
-    			@Override
-    			public String getid(Player player) {
-    				return tf.getid(player);
-    			}
-    			@Override
-    			public Location[] getcuboid(Player player) {
-    				return tf.getcuboid(player);
+        		@Override
+    			public VoxelMask getMask(Player player,Location location) {
+    				return tf.getMask(player,location);
     			}
     		});
             getServer().getPluginManager().registerEvents(tf,this);
@@ -234,14 +223,9 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         if((factionsPlugin != null) && factionsPlugin.isEnabled()) {
         	ff = new FactionsFeature(factionsPlugin,this);
         	addMaskManager(new VoxelMaskManager(factionsPlugin,this) {
-    			@Override
-    			public String getid(Player player) {
-    				return ff.getid(player);
-    			}
-    			
-    			@Override
-    			public Location[] getcuboid(Player player) {
-    				return ff.getcuboid(player);
+        		@Override
+    			public VoxelMask getMask(Player player,Location location) {
+    				return ff.getMask(player,location);
     			}
     		});
             getServer().getPluginManager().registerEvents(ff,this);
@@ -253,13 +237,9 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         if((residencePlugin != null) && residencePlugin.isEnabled()) {
         	rf = new ResidenceFeature(residencePlugin,this);
         	addMaskManager(new VoxelMaskManager(residencePlugin,this) {
-    			@Override
-    			public String getid(Player player) {
-    				return rf.getid(player);
-    			}
-    			@Override
-    			public Location[] getcuboid(Player player) {
-    				return rf.getcuboid(player);
+        		@Override
+    			public VoxelMask getMask(Player player,Location location) {
+    				return rf.getMask(player,location);
     			}
     		});
             getServer().getPluginManager().registerEvents(rf,this);
@@ -271,13 +251,9 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         if((griefpreventionPlugin != null) && griefpreventionPlugin.isEnabled()) {
         	gpf = new GriefPreventionFeature(griefpreventionPlugin,this);
         	addMaskManager(new VoxelMaskManager(griefpreventionPlugin,this) {
-    			@Override
-    			public String getid(Player player) {
-    				return gpf.getid(player);
-    			}
-    			@Override
-    			public Location[] getcuboid(Player player) {
-    				return gpf.getcuboid(player);
+        		@Override
+    			public VoxelMask getMask(Player player,Location location) {
+    				return gpf.getMask(player,location);
     			}
     		});
             getServer().getPluginManager().registerEvents(gpf,this);
@@ -289,13 +265,9 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         if((preciousstonesPlugin != null) && preciousstonesPlugin.isEnabled()) {
         	psf = new PreciousStonesFeature(preciousstonesPlugin,this);
         	addMaskManager(new VoxelMaskManager(preciousstonesPlugin,this) {
-    			@Override
-    			public String getid(Player player) {
-    				return psf.getid(player);
-    			}
-    			@Override
-    			public Location[] getcuboid(Player player) {
-    				return psf.getcuboid(player);
+        		@Override
+    			public VoxelMask getMask(Player player,Location location) {
+    				return psf.getMask(player,location);
     			}
     		});
             getServer().getPluginManager().registerEvents(psf,this);
@@ -327,7 +299,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 		if (protocolLibPlugin!=null) {
 			if (protocolLibPlugin.isEnabled()) {
 				if (getConfig().getBoolean("fast-mode")) {
-					new ProtocolIn(this);
+					protocolin = new ProtocolIn(this);
 					Msg(null,"&6fast-mode enabled for VoxelSniperRegions!");
 				}
 				else {
@@ -471,7 +443,10 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	}
 	@EventHandler
 	private void onPlayerMove(PlayerMoveEvent event) {
-		try {updateMask(event.getPlayer()); } catch (Exception e) {  }
+		if ((event.getFrom().getBlockX()!=(event.getTo().getBlockX()))) { return; }
+		if ((event.getFrom().getBlockY()!=(event.getTo().getBlockY()))) { return; }
+		if ((event.getFrom().getBlockZ()!=(event.getTo().getBlockZ()))) { return; }
+		try {updateMask(event.getPlayer(),event.getPlayer().getLocation()); } catch (Exception e) {  }
 	}
 	@EventHandler
 	private void onPlayerPortal(PlayerPortalEvent event) {
@@ -497,37 +472,33 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 			}
 		}
 	}
-	public VoxelMask getMask(Player player) {
+	public synchronized VoxelMask getMask(Player player) {
 		if (lastMask.containsKey(player.getName())) {
 				return lastMask.get(player.getName());
 		}
 		return null;
 	}
-	public VoxelMask[] getMasks() {
+	public synchronized VoxelMask[] getMasks() {
 		return lastMask.values().toArray(new VoxelMask[lastMask.values().size()]);
 	}
-	public String[] getMaskedPlayerNames() {
+	public synchronized String[] getMaskedPlayerNames() {
 		return lastMask.keySet().toArray(new String[lastMask.keySet().size()]);
 	}
-	public void setMask(Player player,VoxelMask mask) {
+	public synchronized void setMask(Player player,VoxelMask mask) {
 		lastMask.put(player.getName(), mask);
 	}
-	public void removeMask(Player player) {
+	public synchronized void removeMask(Player player) {
 		lastMask.remove(player.getName());
 	}
-	public void updateMask(Player player) {
+	public synchronized void updateMask(Player player, Location location) {
 		if (CheckPerm(player,"vsr.bypass")==false) {
-			Location[] mymask = null;
+			VoxelMask mymask = null;
 			VoxelMask voxelmask = null;
 			String myid = "";
 			for (VoxelMaskManager current:regions.values()) {
 				if (voxelmask==null) {
 					if (CheckPerm(player,"vsr."+current.getKey())) {
-						mymask = current.getcuboid(player);
-						myid = current.getid(player);
-						if (mymask!=null) {
-							voxelmask = new VoxelMask(mymask[0], mymask[1],myid);
-						}
+						mymask = current.getMask(player,location);
 					}
 				}
 			}

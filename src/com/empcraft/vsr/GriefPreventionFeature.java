@@ -17,29 +17,23 @@ public class GriefPreventionFeature implements Listener {
 	public GriefPreventionFeature(Plugin griefpreventionPlugin, VoxelSniperRegions p3) {
 		griefprevention = griefpreventionPlugin;
     	plugin = p3;
-    	
     }
-	public Location[] getcuboid(Player player) {
-		Location[] toreturn = new Location[2];
-		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), true, null);
+	public VoxelMask getMask(Player player,Location location) {
+		final Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, true, null);
 		if (claim!=null) {
 			if (claim.getOwnerName().equalsIgnoreCase(player.getName())) {
 				claim.getGreaterBoundaryCorner().getBlockX();
-				toreturn[0] = new Location(player.getWorld(), claim.getGreaterBoundaryCorner().getBlockX(), claim.getGreaterBoundaryCorner().getBlockY(), claim.getGreaterBoundaryCorner().getBlockZ());
-				toreturn[1] = new Location(player.getWorld(), claim.getLesserBoundaryCorner().getBlockX(), claim.getLesserBoundaryCorner().getBlockY(), claim.getLesserBoundaryCorner().getBlockZ());
-				return toreturn;
+				Location pos1 = new Location(location.getWorld(), claim.getGreaterBoundaryCorner().getBlockX(), claim.getGreaterBoundaryCorner().getBlockY(), claim.getGreaterBoundaryCorner().getBlockZ());
+				Location pos2 = new Location(location.getWorld(), claim.getLesserBoundaryCorner().getBlockX(), claim.getLesserBoundaryCorner().getBlockY(), claim.getLesserBoundaryCorner().getBlockZ());
+				return new VoxelMask(pos1, pos2) {
+					@Override
+					public String getName() {
+						return "CLAIM:"+claim.toString();
+					}
+				};
 			}
 		}
 		return null;
 		
 	}
-	public String getid(Player player) {
-		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), true, null);
-		if (claim==null) {
-			return null;
-		}
-		return "CLAIM:"+claim.toString();
-	}
-
 }
-

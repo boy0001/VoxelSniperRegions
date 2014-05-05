@@ -19,29 +19,22 @@ public class ResidenceFeature implements Listener {
     	plugin = p3;
     	
     }
-	public Location[] getcuboid(Player player) {
-		Location[] toreturn = new Location[2];
-		
-		ClaimedResidence residence = Residence.getResidenceManager().getByLoc(player.getLocation());
+	public VoxelMask getMask(Player player, Location location) {
+		final ClaimedResidence residence = Residence.getResidenceManager().getByLoc(location);
 		if (residence!=null) {
 			if (residence.getPlayersInResidence().contains(player)) {
 				CuboidArea area = residence.getAreaArray()[0];
 				Location pos1 = area.getHighLoc();
 				Location pos2 = area.getLowLoc();
-				toreturn[0] = new Location(player.getWorld(), pos2.getBlockX(),pos2.getBlockY(),pos2.getBlockZ());
-				toreturn[1] = new Location(player.getWorld(), pos1.getBlockX(),pos1.getBlockY(),pos1.getBlockZ());
-				return toreturn;
+				return new VoxelMask(pos1, pos2) {
+					@Override
+					public String getName() {
+						return "RESIDENCE: " + residence.getName();
+					}
+				};
 			}
 		}
 		return null;
 	}
-	public String getid(Player player) {
-		ClaimedResidence residence = Residence.getResidenceManager().getByLoc(player.getLocation());
-		if (residence!=null) {
-			return "RESIDENCE: " + residence.getName();
-		}
-		return null;
-	}
-
 }
 

@@ -18,30 +18,25 @@ public class FactionsFeature implements Listener {
     	plugin = p3;
     	
     }
-	public Location[] getcuboid(Player player) {
-		Location[] toreturn = new Location[2];
+	public VoxelMask getMask(Player player,final Location location) {
 		Faction fac = BoardColls.get().getFactionAt(PS.valueOf(player.getLocation()));
 		
 		if (fac!=null) {
 			if (fac.getOnlinePlayers().contains(player)) {
 				if (fac.getComparisonName().equals("wilderness")==false) {
-					Chunk chunk = player.getLocation().getChunk();
-					toreturn[0] = new Location(player.getWorld(), chunk.getX() * 16, 0, chunk.getZ() * 16);
-					toreturn[1] = new Location(player.getWorld(), (chunk.getX() * 16) + 15, 156, (chunk.getZ() * 16)+15);
-					return toreturn;
+					Chunk chunk = location.getChunk();
+					Location pos1 = new Location(location.getWorld(), chunk.getX() * 16, 0, chunk.getZ() * 16);
+					Location pos2 = new Location(location.getWorld(), (chunk.getX() * 16) + 15, 156, (chunk.getZ() * 16)+15);
+					return new VoxelMask(pos1, pos2) {
+						@Override
+						public String getName() {
+							return "CHUNK:"+location.getChunk().getX()+","+location.getChunk().getZ();
+						}
+					};
 				}
 			}
-			else {
-			}
-			return null;
 		}
-		else {
-			return null;
-		}
+		return null;
 	}
-	public String getid(Player player) {
-		return "CHUNK:"+player.getLocation().getChunk().getX()+","+player.getLocation().getChunk().getZ();
-	}
-
 }
 

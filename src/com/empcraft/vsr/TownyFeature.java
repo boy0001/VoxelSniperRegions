@@ -19,14 +19,8 @@ public class TownyFeature implements Listener {
 	public TownyFeature(Plugin townyPlugin, VoxelSniperRegions p3) {
 		towny = townyPlugin;
     	plugin = p3;
-    	
     }
-	public Location[] getcuboid(Player player) {
-		Location[] toreturn = new Location[2];
-		
-		
-		
-		
+	public VoxelMask getMask(Player player,final Location location) {
 		try {
 			PlayerCache cache = ((Towny) towny).getCache(player);
 			WorldCoord mycoord = cache.getLastTownBlock();
@@ -39,30 +33,33 @@ public class TownyFeature implements Listener {
 					return null;
 				}
 				else {
+					boolean isMember = false;
 					try {
 					if (myplot.getResident().getName().equals(player.getName())) {
-						Chunk chunk = player.getLocation().getChunk();
-						toreturn[0] = new Location(player.getWorld(), chunk.getX() * 16, 0, chunk.getZ() * 16);
-						toreturn[1] = new Location(player.getWorld(), (chunk.getX() * 16) + 15, 156, (chunk.getZ() * 16)+15);
-						return toreturn;
+						isMember = true;
 					}
 					}
 					catch (Exception e) {
 						
 					}
+					if (!isMember) {
 					if (plugin.CheckPerm(player, "wrg.towny.*")) {
-						if (myplot.getTown().hasResident(player.getName())) {
-							Chunk chunk = player.getLocation().getChunk();
-							toreturn[0] = new Location(player.getWorld(), chunk.getX() * 16, 0, chunk.getZ() * 16);
-							toreturn[1] = new Location(player.getWorld(), (chunk.getX() * 16) + 15, 156, (chunk.getZ() * 16)+15);
-							return toreturn;
-						}
+						isMember = true;
 					}
 					else if (myplot.getTown().isMayor(TownyUniverse.getDataSource().getResident(player.getName()))) {
-						Chunk chunk = player.getLocation().getChunk();
-						toreturn[0] = new Location(player.getWorld(), chunk.getX() * 16, 0, chunk.getZ() * 16);
-						toreturn[1] = new Location(player.getWorld(), (chunk.getX() * 16) + 15, 156, (chunk.getZ() * 16)+15);
-						return toreturn;
+						isMember = true;
+					}
+					}
+					if (isMember) {
+						Chunk chunk = location.getChunk();
+						Location pos1 = new Location(location.getWorld(), chunk.getX() * 16, 0, chunk.getZ() * 16);
+						Location pos2 = new Location(location.getWorld(), (chunk.getX() * 16) + 15, 156, (chunk.getZ() * 16)+15);
+						return new VoxelMask(pos1, pos2) {
+							@Override
+							public String getName() {
+								return "PLOT:"+location.getChunk().getX()+","+location.getChunk().getZ();
+							}
+						};
 					}
 				}
 			}
@@ -70,14 +67,5 @@ public class TownyFeature implements Listener {
 			catch (Exception e) {
 			}
 			return null;
-			
-			
-		
-		
 	}
-	public String getid(Player player) {
-		return "PLOT:"+player.getLocation().getChunk().getX()+","+player.getLocation().getChunk().getZ();
-	}
-
 }
-

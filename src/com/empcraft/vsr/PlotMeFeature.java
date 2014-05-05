@@ -1,6 +1,7 @@
 package com.empcraft.vsr;
 
 import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -17,32 +18,24 @@ public class PlotMeFeature implements Listener {
     	plugin = p3;
     	
     }
-	public Location[] getcuboid(Player player) {
-		Location[] toreturn = new Location[2];
+	public VoxelMask getMask(Player player,Location location) {
 		
-		Plot plotid = PlotManager.getPlotById(player.getLocation());
+		final Plot plotid = PlotManager.getPlotById(location);
 		if (plotid==null) {
 			return null;
 		}
-		boolean isallowed = PlotManager.getPlotById(player.getLocation()).isAllowed(player.getName());
+		boolean isallowed = PlotManager.getPlotById(location).isAllowed(player.getName());
 		if (isallowed) {
-			toreturn[0] = new Location(player.getWorld(),PlotManager.bottomX(plotid.id,player.getWorld()),0,PlotManager.bottomZ(plotid.id,player.getWorld()));
-			toreturn[1] = new Location(player.getWorld(),PlotManager.topX(plotid.id,player.getWorld()),256,PlotManager.topZ(plotid.id,player.getWorld()));
-			return toreturn;
+			Location pos1 = new Location(location.getWorld(),PlotManager.bottomX(plotid.id,player.getWorld()),0,PlotManager.bottomZ(plotid.id,player.getWorld()));
+			Location pos2 = new Location(location.getWorld(),PlotManager.topX(plotid.id,player.getWorld()),256,PlotManager.topZ(plotid.id,player.getWorld()));
+			return new VoxelMask(pos1, pos2) {
+				@Override
+				public String getName() {
+					return plotid.id;
+				}
+			};
 		}
 		return null;
 	}
-	public String getid(Player player) {
-		Plot plotid = PlotManager.getPlotById(player);
-		if (plotid==null) {
-			return null;
-		}
-		List<Player> players = PlotManager.getPlayersInPlot(player.getWorld(), plotid.id);
-		if (plotid.getOwner().equalsIgnoreCase(player.getName())||players.contains(player)) {
-			return plotid.id;
-		}
-		return null;
-	}
-
 }
 
