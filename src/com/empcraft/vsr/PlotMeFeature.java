@@ -19,7 +19,6 @@ public class PlotMeFeature implements Listener {
     	
     }
 	public VoxelMask getMask(Player player,Location location) {
-		
 		final Plot plotid = PlotManager.getPlotById(location);
 		if (plotid==null) {
 			return null;

@@ -8,13 +8,10 @@ public abstract class VoxelMaskManager
 {
 	private final String key;
 	private final Plugin myplugin;
-//	private final VoxelSniperRegions myVSR;
-  
-    public VoxelMaskManager(Plugin plugin,VoxelSniperRegions VSR)
+    public VoxelMaskManager(Plugin plugin)
     {
     	key = plugin.getName();
     	myplugin = plugin;
-//    	myVSR = VSR;
     }
     public String getKey()
     {

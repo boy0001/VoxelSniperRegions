@@ -131,13 +131,13 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     public synchronized VoxelMaskManager getMaskManager (Plugin myplugin) {
     	return regions.get(myplugin);
     }
-    public synchronized List<VoxelMaskManager> getRegions() {
+    public synchronized List<VoxelMaskManager> getManagers() {
     	return new ArrayList<VoxelMaskManager>(regions.values());
     }
-    public synchronized List<Plugin> getRegionPlugins() {
+    public synchronized List<Plugin> getManagerPlugins() {
     	return new ArrayList<Plugin>(regions.keySet());
     }
-    public synchronized List<String> getRegionKeys() {
+    public synchronized List<String> getManagerKeys() {
     	List<String> toreturn = new ArrayList<String>();
     	for (VoxelMaskManager current:regions.values()) {
     		toreturn.add(current.getKey());
@@ -180,7 +180,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 		Plugin worldguardPlugin = getServer().getPluginManager().getPlugin("WorldGuard");
         if((worldguardPlugin != null) && worldguardPlugin.isEnabled()) {
         	wgf = new Worldguard(worldguardPlugin,this);
-    		addMaskManager(new VoxelMaskManager(worldguardPlugin,this) {
+    		addMaskManager(new VoxelMaskManager(worldguardPlugin) {
     			@Override
     			public VoxelMask getMask(Player player,Location location) {
     				return wgf.getMask(player,location);
@@ -193,7 +193,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 		Plugin plotmePlugin = getServer().getPluginManager().getPlugin("PlotMe");
         if((plotmePlugin != null) && plotmePlugin.isEnabled()) {
         	pmf = new PlotMeFeature(plotmePlugin,this);
-        	addMaskManager(new VoxelMaskManager(plotmePlugin,this) {
+        	addMaskManager(new VoxelMaskManager(plotmePlugin) {
         		@Override
     			public VoxelMask getMask(Player player,Location location) {
     				return pmf.getMask(player,location);
@@ -206,7 +206,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 		Plugin townyPlugin = getServer().getPluginManager().getPlugin("Towny");
         if((townyPlugin != null) && townyPlugin.isEnabled()) {
         	tf = new TownyFeature(townyPlugin,this);
-        	addMaskManager(new VoxelMaskManager(townyPlugin,this) {
+        	addMaskManager(new VoxelMaskManager(townyPlugin) {
         		@Override
     			public VoxelMask getMask(Player player,Location location) {
     				return tf.getMask(player,location);
@@ -219,7 +219,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         Plugin factionsPlugin = getServer().getPluginManager().getPlugin("Factions");
         if((factionsPlugin != null) && factionsPlugin.isEnabled()) {
         	ff = new FactionsFeature(factionsPlugin,this);
-        	addMaskManager(new VoxelMaskManager(factionsPlugin,this) {
+        	addMaskManager(new VoxelMaskManager(factionsPlugin) {
         		@Override
     			public VoxelMask getMask(Player player,Location location) {
     				return ff.getMask(player,location);
@@ -232,7 +232,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         Plugin residencePlugin = getServer().getPluginManager().getPlugin("Residence");
         if((residencePlugin != null) && residencePlugin.isEnabled()) {
         	rf = new ResidenceFeature(residencePlugin,this);
-        	addMaskManager(new VoxelMaskManager(residencePlugin,this) {
+        	addMaskManager(new VoxelMaskManager(residencePlugin) {
         		@Override
     			public VoxelMask getMask(Player player,Location location) {
     				return rf.getMask(player,location);
@@ -245,7 +245,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         Plugin griefpreventionPlugin = getServer().getPluginManager().getPlugin("GriefPrevention");
         if((griefpreventionPlugin != null) && griefpreventionPlugin.isEnabled()) {
         	gpf = new GriefPreventionFeature(griefpreventionPlugin,this);
-        	addMaskManager(new VoxelMaskManager(griefpreventionPlugin,this) {
+        	addMaskManager(new VoxelMaskManager(griefpreventionPlugin) {
         		@Override
     			public VoxelMask getMask(Player player,Location location) {
     				return gpf.getMask(player,location);
@@ -258,7 +258,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         Plugin preciousstonesPlugin = getServer().getPluginManager().getPlugin("PreciousStones");
         if((preciousstonesPlugin != null) && preciousstonesPlugin.isEnabled()) {
         	psf = new PreciousStonesFeature(preciousstonesPlugin,this);
-        	addMaskManager(new VoxelMaskManager(preciousstonesPlugin,this) {
+        	addMaskManager(new VoxelMaskManager(preciousstonesPlugin) {
         		@Override
     			public VoxelMask getMask(Player player,Location location) {
     				return psf.getMask(player,location);
@@ -271,7 +271,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         saveResource("english.yml", true);
         getConfig().options().copyDefaults(true);
         Map<String, Object> options = new HashMap<String, Object>();
-        getConfig().set("version", "0.3.3");
+        getConfig().set("version", "0.3.4");
         options.put("language","english");
         options.put("fast-mode",true);
         options.put("cooldown-ms",100);
