@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-import com.massivecraft.factions.entity.BoardColls;
+import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.factions.entity.Faction;
-import com.massivecraft.mcore.ps.PS;
+import com.massivecraft.massivecore.ps.PS;
 
 public class FactionsFeature implements Listener {
 	VoxelSniperRegions plugin;
@@ -19,8 +19,7 @@ public class FactionsFeature implements Listener {
     	
     }
 	public VoxelMask getMask(Player player,final Location location) {
-		Faction fac = BoardColls.get().getFactionAt(PS.valueOf(player.getLocation()));
-		
+		Faction fac = BoardColl.get().getFactionAt(PS.valueOf(player.getLocation()));
 		if (fac!=null) {
 			if (fac.getOnlinePlayers().contains(player)) {
 				if (fac.getComparisonName().equals("wilderness")==false) {

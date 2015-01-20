@@ -23,8 +23,8 @@ public class GriefPreventionFeature implements Listener {
 		if (claim!=null) {
 			if (claim.getOwnerName().equalsIgnoreCase(player.getName())) {
 				claim.getGreaterBoundaryCorner().getBlockX();
-				Location pos1 = new Location(location.getWorld(), claim.getGreaterBoundaryCorner().getBlockX(), claim.getGreaterBoundaryCorner().getBlockY(), claim.getGreaterBoundaryCorner().getBlockZ());
-				Location pos2 = new Location(location.getWorld(), claim.getLesserBoundaryCorner().getBlockX(), claim.getLesserBoundaryCorner().getBlockY(), claim.getLesserBoundaryCorner().getBlockZ());
+				Location pos1 = new Location(location.getWorld(), claim.getLesserBoundaryCorner().getBlockX(), 0, claim.getLesserBoundaryCorner().getBlockZ());
+				Location pos2 = new Location(location.getWorld(), claim.getGreaterBoundaryCorner().getBlockX(), 256, claim.getGreaterBoundaryCorner().getBlockZ());
 				return new VoxelMask(pos1, pos2) {
 					@Override
 					public String getName() {

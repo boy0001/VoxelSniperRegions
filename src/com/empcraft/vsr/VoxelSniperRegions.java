@@ -2,12 +2,10 @@ package com.empcraft.vsr;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -34,6 +32,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.thevoxelbox.voxelsniper.VoxelSniper;
+
 public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	volatile Map<Plugin, VoxelMaskManager> regions = new ConcurrentHashMap<Plugin, VoxelMaskManager>();
 	volatile Map<String, Long> coolDown = new ConcurrentHashMap<String, Long>();
@@ -48,8 +47,9 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	FactionsFeature ff;
 	PreciousStonesFeature psf;
 	TownyFeature tf;
-	VoxelSniper voxelsniper;
+	static VoxelSniper voxelsniper;
 	SniperManagerFeature sniperManager;
+	PlotSquaredFeature pf;
 	private boolean toUndo = false;
 	private volatile boolean toCheck = true;
 	volatile String lastMsg;
@@ -65,7 +65,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 	}
 	public String GetMsg(String key) {
 		File yamlFile = new File(getDataFolder(), getConfig().getString("language").toLowerCase()+".yml"); 
-		YamlConfiguration.loadConfiguration(yamlFile);
 		try {
 			return Colorise(YamlConfiguration.loadConfiguration(yamlFile).getString(key));
 		}
@@ -169,14 +168,16 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 		Msg(null,"&8======&6VoxelSniperRegions&8======");
 		plugin = this;
 		getServer().getPluginManager().registerEvents(this, this);
-		voxelsniper = (VoxelSniper) getServer().getPluginManager().getPlugin("voxelsniper");
-		Msg(null,"&fRunning VS "+VoxelSniper.getInstance().getDescription().getVersion());
-		if (VoxelSniper.getInstance().getDescription().getVersion().split("-")[0].startsWith("5.168")) {
+		Plugin plugin = getServer().getPluginManager().getPlugin("VoxelSniper");
+		voxelsniper = (VoxelSniper) plugin;
+		Msg(null,"&fRunning VS " + plugin.getDescription().getVersion());
+		if (plugin.getDescription().getVersion().split("-")[0].startsWith("5.168")) {
 			Msg(null,"&c[WARNING] An older version of VoxelSniper has been detected. Some features may not work properly");
 		}
 		else {
 			sniperManager = new SniperManagerFeature();
 		}
+		
 		Plugin worldguardPlugin = getServer().getPluginManager().getPlugin("WorldGuard");
         if((worldguardPlugin != null) && worldguardPlugin.isEnabled()) {
         	wgf = new Worldguard(worldguardPlugin,this);
@@ -255,6 +256,19 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         } else {
             Msg(null,"Plugin 'GriefPrevention' not found. GriefPrevention features disabled.");
         }
+        Plugin plotsquaredPlugin = getServer().getPluginManager().getPlugin("PlotSquared");
+        if((plotsquaredPlugin != null) && plotsquaredPlugin.isEnabled()) {
+        	pf = new PlotSquaredFeature(plotsquaredPlugin,this);
+        	addMaskManager(new VoxelMaskManager(plotsquaredPlugin) {
+        		@Override
+    			public VoxelMask getMask(Player player,Location location) {
+    				return pf.getMask(player,location);
+    			}
+    		});
+            Msg(null,"Plugin 'PlotSquared' found. Using it now.");
+        } else {
+            Msg(null,"Plugin 'PlotSquared' not found. PlotSquared features disabled.");
+        }
         Plugin preciousstonesPlugin = getServer().getPluginManager().getPlugin("PreciousStones");
         if((preciousstonesPlugin != null) && preciousstonesPlugin.isEnabled()) {
         	psf = new PreciousStonesFeature(preciousstonesPlugin,this);
@@ -271,7 +285,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         saveResource("english.yml", true);
         getConfig().options().copyDefaults(true);
         Map<String, Object> options = new HashMap<String, Object>();
-        getConfig().set("version", "0.3.4");
+        getConfig().set("version", "0.3.5");
         options.put("language","english");
         options.put("fast-mode",true);
         options.put("cooldown-ms",100);
@@ -296,6 +310,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 				}
 				else {
 					Msg(null,"&6fast-mode is disabled for VoxelSniperRegions, you can enable it in the config.yml");
+					setCheck(false);
 				}
 			}
 		}
@@ -307,13 +322,13 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     	if (cmd.getName().equalsIgnoreCase("vsr")) {
     		Player player;
     		if (sender instanceof Player==false) {
+    		    System.out.print("ONLY PLAYERS CAN EXECUTE THAT COMMAND");
     			player = null;
     			return false;
     		}
     		else {
     			player = (Player) sender;
     		}
-    		
     		if (args.length>0) {
     			if (args[0].equalsIgnoreCase("reload" )) {
     				if (CheckPerm(player, "vsr.reload")) {
@@ -326,21 +341,11 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     				return true;
     			}
     			if (args[0].equalsIgnoreCase("help" )) {
-    				if (CheckPerm(player, "vsr.help")) {
-        				Msg(player,GetMsg("MSG4"));
-        			}
-        			else {
-        				Msg(player, GetMsg("MSG6")+"vsr.help");
-        			}
+    				Msg(player,GetMsg("MSG4"));
     				return true;
     			}
     			if (args[0].equalsIgnoreCase("credits" )) {
-    				if (CheckPerm(player, "vsr.help")) {
-        				Msg(player,GetMsg("CREDITS"));
-        			}
-        			else {
-        				Msg(player, GetMsg("MSG6")+"vsr.credits");
-        			}
+    				Msg(player,GetMsg("CREDITS"));
     				return true;
     			}
     		}
@@ -371,7 +376,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 		Player player = event.getPlayer();
 		ItemStack helditem = player.getItemInHand();
 		if (CheckPerm(player,"voxelsniper.sniper")||CheckPerm(player,"voxelsniper.litesniper")) {
-			if (CheckPerm(player,"vsr.bypass")==false) {
+			if (!CheckPerm(player,"vsr.bypass")) {
 				try {
 					if (sniperManager!=null) {
 						if (helditem.getType().equals(Material.ARROW)) {
@@ -384,13 +389,13 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 							lastPlayer = player;
 						}
 						if (getCheck()==false) {
-							lastPlayer = null;
 							int radius = sniperManager.radius(player, voxelsniper);
 							if (getConfig().getInt("cooldown-brush-size")<=radius) {
 								addCoolDown(player.getName(), System.currentTimeMillis()+getConfig().getLong("cooldown-ms"));
 							}
 							return;
 						}
+						lastPlayer = player;
 					}
 					else {
 						if (helditem.getType().equals(Material.ARROW)) {
@@ -551,11 +556,21 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
     private void onBlockPhysicsEvent(BlockPhysicsEvent event) {
 		if (toUndo==false) {
 			if (lastPlayer!=null) {
-				Location loc = new Location(lastPlayer.getWorld(),event.getBlock().getX(),event.getBlock().getY(),event.getBlock().getZ());
-				if (lastMask.containsKey(lastPlayer.getName())) {
-					VoxelMask mymask = lastMask.get(lastPlayer.getName());
-					if (mymask.contains(loc)) {
-						return;
+				if (getCheck())  {
+					Location loc = new Location(lastPlayer.getWorld(),event.getBlock().getX(),event.getBlock().getY(),event.getBlock().getZ());
+					if (lastMask.containsKey(lastPlayer.getName())) {
+						VoxelMask mymask = lastMask.get(lastPlayer.getName());
+						if (mymask.contains(loc)) {
+							return;
+						}
+						else {
+							if (lastMsg==null) {
+								lastMsg = GetMsg("MSG15");
+								Msg(lastPlayer,lastMsg);
+							}
+							toUndo=true;
+							return;
+						}
 					}
 					else {
 						if (lastMsg==null) {
@@ -566,16 +581,6 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
 						return;
 					}
 				}
-				else {
-					if (lastMsg==null) {
-						lastMsg = GetMsg("MSG15");
-						Msg(lastPlayer,lastMsg);
-					}
-					toUndo=true;
-					return;
-				}
-			}
-			else {
 			}
 		}
     }

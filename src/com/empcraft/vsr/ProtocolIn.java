@@ -82,12 +82,18 @@ public class ProtocolIn {
 									}
 									Location pos1 = new Location(player.getWorld(), location.getBlockX()+radius, location.getBlockY()+radius, location.getBlockZ()+radius);
 									Location pos2 = new Location(player.getWorld(), location.getBlockX()-radius, location.getBlockY()-radius, location.getBlockZ()-radius);
+									Location pos3 = new Location(player.getWorld(), location.getBlockX()+radius, location.getBlockY()+radius, location.getBlockZ()-radius);
+									Location pos4 = new Location(player.getWorld(), location.getBlockX()-radius, location.getBlockY()+radius, location.getBlockZ()+radius);
 									if (mymask.contains(pos1)) {
 										if (mymask.contains(pos2)) {
-											//TODO CHECK IF BRUSH IS SAFE
-											if (true) { //IF WHITELISTED
-												VSR.setCheck(false);
-												return;
+											if (mymask.contains(pos3)) {
+												if (mymask.contains(pos4)) {
+													//TODO CHECK IF BRUSH IS SAFE
+													if (true) { //IF WHITELISTED
+														VSR.setCheck(false);
+														return;
+													}
+												}
 											}
 										}
 									}
