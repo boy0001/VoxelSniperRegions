@@ -5,12 +5,11 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import com.intellectualcrafters.plot.api.PlotAPI;
 import com.intellectualcrafters.plot.object.Plot;
-import com.intellectualcrafters.plot.util.PlotHelper;
-import com.intellectualcrafters.plot.util.UUIDHandler;
+import com.intellectualcrafters.plot.object.PlotPlayer;
+import com.intellectualcrafters.plot.util.MainUtil;
+import com.intellectualcrafters.plot.util.bukkit.BukkitUtil;
 
 public class PlotSquaredFeature implements Listener {
 	VoxelSniperRegions plugin;
@@ -18,22 +17,27 @@ public class PlotSquaredFeature implements Listener {
 		plugin = p3;
     }
 	public VoxelMask getMask(Player player,final Location location) {
-		final Plot plot = PlotHelper.getCurrentPlot(player.getLocation());
+	    PlotPlayer pp = BukkitUtil.getPlayer(player);
+		final Plot plot = MainUtil.getPlot(pp.getLocation());
 		if (plot!=null) {
 			boolean hasPerm = false;
 			if (plot.getOwner()!=null) {
-				if (plot.getOwner().equals(UUIDHandler.uuidWrapper.getUUID(player))) {
+				if (plot.getOwner().equals(pp.getUUID())) {
 					hasPerm = true;
 				}
-				else if (plot.hasRights(player) && plugin.CheckPerm(player, "wrg.plotsquared.member")) {
+				else if (plot.isAdded(pp.getUUID()) && pp.hasPermission("vsr.plotsquared.member")) {
 					hasPerm = true;
 				}
 				if (hasPerm) {
 				    World world = player.getWorld();
-					Location pos1 = PlotHelper.getPlotBottomLoc(world, plot.id).add(1,0,1);
-					pos1.setY(0);
-					Location pos2 = PlotHelper.getPlotTopLoc(world, plot.id);
-					pos2.setY(256);
+				    String worldname = world.getName();
+					com.intellectualcrafters.plot.object.Location p1 = MainUtil.getPlotBottomLoc(worldname, plot.id).add(1,0,1);
+					com.intellectualcrafters.plot.object.Location p2 = MainUtil.getPlotTopLoc(worldname, plot.id);
+					
+					Location pos1 = new Location(world, p1.getX(), 0, p1.getZ());
+					Location pos2 = new Location(world, p2.getX(), 256, p2.getZ());
+					
+					
 					return new VoxelMask(pos1, pos2) {
 						@Override
 						public String getName() {
