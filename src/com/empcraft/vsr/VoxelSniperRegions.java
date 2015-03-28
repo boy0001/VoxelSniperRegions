@@ -285,7 +285,7 @@ public final class VoxelSniperRegions extends JavaPlugin implements Listener {
         saveResource("english.yml", true);
         getConfig().options().copyDefaults(true);
         Map<String, Object> options = new HashMap<String, Object>();
-        getConfig().set("version", "0.3.5");
+        getConfig().set("version", plugin.getDescription().getVersion());
         options.put("language","english");
         options.put("fast-mode",true);
         options.put("cooldown-ms",100);

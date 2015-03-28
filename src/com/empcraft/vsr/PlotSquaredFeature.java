@@ -21,8 +21,8 @@ public class PlotSquaredFeature implements Listener {
 		final Plot plot = MainUtil.getPlot(pp.getLocation());
 		if (plot!=null) {
 			boolean hasPerm = false;
-			if (plot.getOwner()!=null) {
-				if (plot.getOwner().equals(pp.getUUID())) {
+			if (plot.owner!=null) {
+				if (plot.owner.equals(pp.getUUID())) {
 					hasPerm = true;
 				}
 				else if (plot.isAdded(pp.getUUID()) && pp.hasPermission("vsr.plotsquared.member")) {
