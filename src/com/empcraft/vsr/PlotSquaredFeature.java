@@ -9,7 +9,6 @@ import org.bukkit.plugin.Plugin;
 import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotPlayer;
 import com.intellectualcrafters.plot.util.MainUtil;
-import com.intellectualcrafters.plot.util.bukkit.BukkitUtil;
 
 public class PlotSquaredFeature implements Listener {
 	VoxelSniperRegions plugin;
@@ -17,8 +16,8 @@ public class PlotSquaredFeature implements Listener {
 		plugin = p3;
     }
 	public VoxelMask getMask(Player player,final Location location) {
-	    PlotPlayer pp = BukkitUtil.getPlayer(player);
-		final Plot plot = MainUtil.getPlot(pp.getLocation());
+	    PlotPlayer pp = PlotPlayer.wrap(player);
+	    final Plot plot = pp.getCurrentPlot();
 		if (plot!=null) {
 			boolean hasPerm = false;
 			if (plot.owner!=null) {
@@ -36,7 +35,6 @@ public class PlotSquaredFeature implements Listener {
 					
 					Location pos1 = new Location(world, p1.getX(), 0, p1.getZ());
 					Location pos2 = new Location(world, p2.getX(), 256, p2.getZ());
-					
 					
 					return new VoxelMask(pos1, pos2) {
 						@Override

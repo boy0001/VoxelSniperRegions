@@ -68,4 +68,27 @@ public class VoxelMask
 		}
 		return true;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj.hashCode() != hashCode()) {
+            return false;
+        }
+
+        if (obj instanceof VoxelMask) {
+            return ((VoxelMask) obj).getLowerBound().equals(getLowerBound()) && ((VoxelMask) obj).getUpperBound().equals(getUpperBound());
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        if (description == null) {
+            return 0;
+        }
+        return description.hashCode();
+    }
 }

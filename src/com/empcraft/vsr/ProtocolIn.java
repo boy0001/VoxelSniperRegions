@@ -90,7 +90,7 @@ public class ProtocolIn {
 												if (mymask.contains(pos4)) {
 													//TODO CHECK IF BRUSH IS SAFE
 													if (true) { //IF WHITELISTED
-														VSR.setCheck(false);
+//														VSR.setCheck(false);
 														return;
 													}
 												}
